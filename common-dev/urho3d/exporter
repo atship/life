@@ -1,0 +1,9 @@
+That if you like your model look forward z axis in urho3d, you may rotate your model with 90 degrees around x axis and apply the rotation in model builder like as Blender. And then you can export the model in .dae format, use AssetImporter scene yourdaefile.dae yourscenefile.xml [-am] for converting your models. That's all.
+
+If you use unity for editor, then you would notice that you must rotate the model with 180 degrees around y axis when you export the scene nodes info from unity. The code is below:
+
+gameobject.localRotation.eulerangles.y -= 180;
+gameobject.localPosition.x *= -1;
+gameobject.localPosition.z *= -1;
+
+That's ok.

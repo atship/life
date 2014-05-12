@@ -1,0 +1,12 @@
+1, 以管理员权限启动cmd
+
+2, netsh wlan show drivers
+找到"支持的承载网络: 是",则继续,否则无法建立wifi热点
+
+3, netsh wlan set hostednetwork mode=allow ssid=my-wlan key=12345678
+
+4, 右键已连接网路的连接(可以是宽带连接),点击"属性",点击"共享",选择"允许其他网络用户通过此计算机的Internet连接来连接",并下拉选择系统新创建的"无线网络连接 2"
+
+5, netsh wlan start hostednetwork
+
+6, 删除时, netsh wlan stop hostednetwork

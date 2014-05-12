@@ -1,0 +1,3 @@
+Author: Vincent Driessen
+Original blog post: http://nvie.com/posts/a-succesful-git-branching-model
+License: Creative Commons BY-SA

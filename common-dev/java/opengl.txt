@@ -1,0 +1,1 @@
+﻿在运行配置（run/debug configurations）的vm options中填入 -Djava.library.path=path_to_native_libs

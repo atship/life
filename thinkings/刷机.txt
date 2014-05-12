@@ -1,0 +1,2 @@
+1,首先分清是线刷还是卡刷，并且搜索相应机型的线刷和卡刷信息，下载相应软件(recovery, rom, driver, 线刷驱动, flash-tools ...)
+2,知道正确的进入recovery或者线刷步骤

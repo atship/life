@@ -1,0 +1,7 @@
+Ctrl+A          Apply transformation, rotation, scale to the object and clear its value
+Ctrl+P          Make the objects that have been selected be the sons of the last selected object
+A               Select all objects in the scene
+N               Show the properties of the selected object
+Space           Quick action search, often use it for import models
+Ctrl+Alt+U      Open the settings
+Ctrl+O          Open blender file

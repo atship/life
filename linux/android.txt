@@ -1,0 +1,8 @@
+#[libgcc.i686][readline.i686]这两条我没有用到，如果出现问题的话，加上这个吧
+yum install ncurses-libs.i686 libstdc++.i686 zlib.i686
+
+#如果是ubuntu的话
+apt-get install ia32-lib
+
+#ubuntu 13-10
+sudo apt-get install libc6:i386 libgcc1:i386 gcc-4.6-base:i386 libstdc++5:i386 libstdc++6:i386 lib32z1 lib32ncurses5 lib32bz2-1.0

@@ -1,0 +1,6 @@
+1, AsyncTask must run on ui thread.
+2, Webview must run on ui thread.
+3, http connection can't run on ui thread
+4, Toast must run on ui thread
+5, the android system would be crushed by key event dispatch time out
+6, the android system would be crushed by sound player dead lock

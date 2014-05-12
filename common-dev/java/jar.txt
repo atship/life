@@ -1,0 +1,2 @@
+想要运行jar包的主类，则可以java -jar *.jar parameters
+想要执行jar包中的非主类，则需要java -classpath *.jar your.main.class parameters

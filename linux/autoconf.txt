@@ -1,0 +1,15 @@
+# autoconf
+# 如果想要在configure中添加--enable-debug选项, 打开configure.ac文件
+# 添加格式 AS_ARG_ENABLE(名字(此名字将会以enable_名字的格式出现), 帮助描述, 如果提供了此参数值的处理, 未提供此参数值时的处理)
+# 有两种方式可以处理
+# 1) 通过AS_IF指令来处理, 格式 AS_IF(if-condition, handle, ..., else-handle)
+AS_ARG_ENABLE(debug, AS_HELP_STRING([--enable-debug], [enable debug mode (default=no)]), [], [enable_debug=no])
+AS_IF([test "X$enable_debug" = "Xyes"], [CXXFLAGS="-g -DDEBUG -Wall"], [CXXFLAGS="-O2 -Wall"])
+# 2) 直接处理
+AS_ARG_ENABLE(debug, AS_HELP_STRING([--enable-debug], [enable debug mode (default=no)]), [
+    case "$enablevar" in 
+        yes) CXXFLAGS="-g -DDEBUG -Wall";;
+        no) CXXFLAGS="-O4 -Wall";;
+        *) AC_MSG_ERROR(bad value of $enablevar of --enable-debug);;
+    esac
+], [CXXFLAGS="-O4 -Wall"])

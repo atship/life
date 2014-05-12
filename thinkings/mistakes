@@ -1,0 +1,23 @@
+1, There are several times misspell the word, and bug occurs. 
+    eg.
+    <car
+        name="newbie"
+        qteTimer=".5"
+    />
+    <car
+        name="good"
+        qtetimer=".6"
+    />
+   the word "qteTimer" is not "qtetimer", don't trust yourself when you find that the same code causes different results.
+
+2, The initializer is very important
+    eg.
+    defined a pointer in header file:
+    Class* obj_;
+    
+    using the pointer in source file without initialize:
+    if (obj_)
+        obj_->DoSomething(); // will cause crash in windows system and android system.
+    
+    initialize it with 0, then the code would be ok, because it is empty, the system will skip it
+    obj_ = 0;

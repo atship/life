@@ -1,0 +1,2 @@
+using vs2013-command-line-prompt
+msbuild myproject.sln /p:Configuration=Release/Debug/MinSizeRel/... /t:Clean;Compile

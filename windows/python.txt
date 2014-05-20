@@ -1,0 +1,2 @@
+1, python can't work with https
+install openssl windows binary

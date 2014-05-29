@@ -1,4 +1,4 @@
-1, There are several times misspell the word, and bug occurs. 
+1, There are several times misspell the word, and bug occurs.
     eg.
     <car
         name="newbie"
@@ -14,10 +14,14 @@
     eg.
     defined a pointer in header file:
     Class* obj_;
-    
+
     using the pointer in source file without initialize:
     if (obj_)
         obj_->DoSomething(); // will cause crash in windows system and android system.
-    
+
     initialize it with 0, then the code would be ok, because it is empty, the system will skip it
     obj_ = 0;
+
+3, Understand the mechanism is very important.
+    The timesaving behavior is that, known it's behavior, without guess. I known, it's painful to do this. But this is a quickly way to use a tool.
+    You can test it again and again, if you can't walk into. Especially you don't know the mechanism. Try and guess and test. This is the final way. Not recommend. You can search it in the network, ask someone for help, if it still not work, try the final way.

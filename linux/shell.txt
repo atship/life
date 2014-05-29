@@ -24,7 +24,8 @@
 	done < file
 
 5, 字符串截取
-	str="wa ha ha"
+	str="wa ha hawo"
 	${str:0:4} //wa h
 	${str:0:7} //wa ha h
+	${str:0-3} //awo
 	${#str} //字符串长度8

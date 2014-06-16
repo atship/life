@@ -29,3 +29,6 @@ fileName
 
 #第二种方式，全局忽略，则你创建的所有工程都将会忽略指定的文件，创建文件同第一种方法，但可以存放到任意目录下，使用以下命令生效
 git config --global core.excludesfile /file-path/to/.gitignore
+
+#处理冲突，可以先安装meld或者其他合并工具，如果没有安装，下面的命令将会提示
+git mergetool

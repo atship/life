@@ -1,0 +1,39 @@
+// Ctrl % Shift # Alt &
+// LEFT, RIGHT, UP, DOWN, F1 .. F12, HOME, END, PGUP, PGDN
+// This code will add a submenu under Tools, and the hotkey is Ctrl + Shift + E
+menu item:
+@MenuItem("Tools/This is test menu item %#E")
+static function Good()
+{
+    Debug.Log("Good item triggered");
+}
+
+context menu:
+    [ContextMneu("Operate Resource")]
+static function Op()
+{
+    Debug.Log("Operate resource");
+}
+
+selection:
+    class Selection
+
+component:
+    [ExecuteInEditMode]
+    [AddComponentMenu("MyComponent/submenu %#1")]
+    class MyComponent
+    {
+        function OnGUI(){}
+        function Update(){}
+    }
+
+Editor scripts are put into the Editor directory.
+UnityEditor and UnityEngine are different with each other, if your code will run in editor and runtime, you can trim the code not necessary in runtime using the macro "#if UNITY_EDITOR ... #endif"
+
+using UnityEditor;
+
+class MyEditorWindow extends EditorWindow
+{
+    [MenuItem("Window/MyWindow")]
+    public static function Instance(){ return EditorWindow.GetWindow(typeof(MyEditorWindow)) as MyEditorWindow; }
+}

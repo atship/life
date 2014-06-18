@@ -1,0 +1,25 @@
+when where who why how result
+
+when:
+    anything happened
+    time elapsed
+    always
+
+where:
+    relative to area
+
+who:
+    which object
+
+why:
+    in the designer mind
+
+how:
+    action1
+    action2
+    action3
+
+result:
+    new event trigger
+    finished
+    ...

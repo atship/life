@@ -23,5 +23,6 @@
     obj_ = 0;
 
 3, Understand the mechanism is very important.
-    The timesaving behavior is that, known it's behavior, without guess. I known, it's painful to do this. But this is a quickly way to use a tool.
-    You can test it again and again, if you can't walk into. Especially you don't know the mechanism. Try and guess and test. This is the final way. Not recommend. You can search it in the network, ask someone for help, if it still not work, try the final way.
+    1, The timesaving behavior is that, known it's behavior, without guess. I know, it's painful to do this. But this is a quickly way to use a knowledge and avoid many many bugs.
+    2, You can search it in the network, ask someone for help. It's still painful because there are so many infomations that I don't know how to learn. Just do it.
+    3, You can test it again and again, if you can't walk into. Especially you don't know the mechanism. Try and guess and test. This is the final way. Not recommend.

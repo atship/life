@@ -1,0 +1,27 @@
+1, apply for vps of amazon or somethings
+    for example, apply for amazon vps
+    1, go "http://aws.amazon.com/free"
+    2, select try it for free
+    3, create account and bind your credit card (visa is ok)
+    4, your credit card will lose $1
+    5, provide your phone number and wait for amazon call you
+    6, when amazon call your phone, input the code on the page in the phone
+    7, that's ok
+    8, go "https://console.aws.amazon.com/ec2/home"
+    9, click launch instance
+    10, select the basic
+    11, follow the guides
+    12, create a new key pair and download it
+    13, that's all
+    
+2, on windows:
+    1, use puttygen load vps.pem and save it to putty.ppk
+    2, use putty to save a session that IP is your vps opendns and ssh auth is putty.ppk
+    3, use "plink -C -D 127.0.0.1:8086 ubuntu@session-last-saved -N" to connect
+    4, in chrome, use SwitchySharp and create a new scenario that use socks5 and address is 127.0.0.1:8086
+    5, the rules of SwitchySharp are set to the last created scenario
+    6, set the online rules to "http://autoproxy-gfwlist.googlecode.com/svn/trunk/gfwlist.txt" and update
+    7, enjoy
+3, on linux
+    1, use "ssh -C -D 127.0.0.1:8086 ubuntu@open-dns -N -i vps.pem" to connect
+    2, follow left steps after 3 of the section "on windows"

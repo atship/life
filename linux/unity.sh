@@ -14,3 +14,4 @@
 #如果提示缺dnsapi.dll，则使用winecfg，使用内置library优先于native
 #！重要！如果不创建的话，运行游戏即崩溃，并且Hierarchy里的对象全部消失
 ~$ mkdir -p ~/.wineunity42/drive_c/users/yourname/AppData/LocalLow
+#if the unity can't launch under opengl mode, you can install 32bit driver like as libgl1-mesa-dri:i386 under debian-like system.

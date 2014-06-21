@@ -12,7 +12,7 @@ who:
     which object
 
 why:
-    in the designer mind
+    in the designer's mind
 
 how:
     action1

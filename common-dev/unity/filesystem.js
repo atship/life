@@ -6,13 +6,14 @@ import System.IO;
 
 // some path
 Application.datapath // $PROJECT_DIR/Assets/
+Application.persistentDataPath //手机平台可以将文件存在这里
 scene.path @see scenes.js // $PROJECT_DIR/Assets/[**/]sceneName.unity
 
 // remove files in path
 for (var file : String in Directory.GetFiles(path))
 	FileUtil.DeleteFileOrDirectory(file);
 
-// get asset file path	
+// get asset file path
 AssetDatabase.GetAssetPath
 
 // get asset file name, like as prefab, model, texture etc.

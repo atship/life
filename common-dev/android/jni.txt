@@ -26,6 +26,9 @@ extern "C"{
 }
 
 2, 一定要注意jclass, jobject, jstring需要delete，尤其是在一个循环之内的时候
+    env->DeleteLocalRef(jclass)
+    env->DeleteLocalRef(jobject)
+    evn->ReleaseStringUTFChars(jstring)
 
 3, android的__android_log_print，如果定义了一个宏，比如LOGI(...)　((void)__android_log_print(ANDROID_LOG_INFO, "TAG", __VA_ARGS__)),这时如果要输出一个变量的值，则需要使用format, 例如LOGI("%s", c_str)
 

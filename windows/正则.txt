@@ -1,0 +1,16 @@
+Notepad++之下的正则用法
+.   任意字符
+\n  新行
+|   A或者B，例如aa|bb
+*   任意次
++   至少一次
+?   0或者1次
+()  分组，可以使用\1, \2, ... 来引用
+[^] 不匹配[]中的字符(单个)
+$   以此为结尾
+^   以此为开头
+
+例子：
+    1，从<li><a href="http://www.abc.com/anything/file.zip">Zip file</a><a href="xxxx.xxx">xxxx</a></li>里提取zip链接
+        查找: .*(http.*\.zip).*
+        替换: \1

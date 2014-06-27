@@ -32,3 +32,6 @@ git config --global core.excludesfile /file-path/to/.gitignore
 
 #处理冲突，可以先安装meld或者其他合并工具，如果没有安装，下面的命令将会提示
 git mergetool
+
+#从.git目录检出文件，这样做可以只备份.git目录，而不需要将临时文件也打包
+git checkout -f

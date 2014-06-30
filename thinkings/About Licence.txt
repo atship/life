@@ -1,0 +1,15 @@
+The common licence options are :
+
+1, NO WARRANTY
+	1, That is, if your data is lost, or money, or anything, the Author will disclaim any responsibility
+	
+2, COPYRIGHT
+	1, Proprietary
+		1, You have no permissions to decompile/disassembly it, otherwise the law allow it
+		2, You have no permissions to reproduce/redistribute it, otherwise get the permissions from the author
+		
+	2, Open source
+		1, GPL, modified/linked would be open sourced to the community
+		2, LGPL, modified is like as GPL, link is OK.
+		3, MIT, modified/linked is OK
+		All would include the origin copyright file and marked for your modified.

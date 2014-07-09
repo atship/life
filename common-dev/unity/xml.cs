@@ -29,3 +29,8 @@ if (child.HasAttribute("attrib"))
 XmlElement nextChild = (XmlElement)child.NextSibling;
 if (nextChild.HasAttribute("attrib"))
     Int.Parse(child.InnerText);
+
+foreach(XmlElement element in root)
+{
+    ...
+}

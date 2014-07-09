@@ -13,3 +13,4 @@ The common licence options are :
 		2, LGPL, modified is like as GPL, link is OK.
 		3, MIT, modified/linked is OK
 		All would include the origin copyright file and marked for your modified.
+		

@@ -27,7 +27,9 @@
         function Update(){}
     }
 
-5, Editor scripts are put into the Editor directory. UnityEditor and UnityEngine are different with each other, if your code will run in editor and runtime, you can trim the code not necessary in runtime using the macro "#if UNITY_EDITOR ... #endif"
+5, Editor scripts are put into the Editor directory. UnityEditor and UnityEngine are different with each other, 
+   if your code will run in editor and runtime, you can trim the code not necessary in runtime using the macro "#if UNITY_EDITOR ... #endif"
+   by the way, the code in the Editor folder will compile in the last time, after the other code is compiled
 
 using UnityEditor;
 
@@ -39,3 +41,23 @@ class MyEditorWindow extends EditorWindow
 
 6, display dialog
     EditorUtility.DisplayDialog(title, content, ok, [cancel])
+
+7, inspector
+    [CustomEditor(typeof(MyClass))]
+    public MyClassEditor : Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            EditorGUILayout.TextField...
+            if (GUIButton(label)){...}
+        }
+        
+        MyClass tar_;
+        public void OnEnable()
+        {
+            tar_ = target as MyClass;
+        }
+    }
+    // well, the inspector will re-enable when you click the target that contains the editor.
+    // therefore, the data must save in the target, don't save in the editor, it can't serialize
+    // even if you indicate the attribute as [Serializable] in the editor.

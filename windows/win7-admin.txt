@@ -1,0 +1,4 @@
+1, 管理员启动cmd
+2, net user administrator /active:yes
+3, 到用户账户中设置admin的密码
+4, 使用 runas /user:administrator "cmd-with-full-path params"

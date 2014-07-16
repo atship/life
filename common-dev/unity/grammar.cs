@@ -66,5 +66,8 @@
 6, clear string
     myvar = string.Empty
 
-
-    
+7, multiline string
+    string multi = @"
+    this is common text
+    this text is contains quotes ""haha i am in quotes""
+    "

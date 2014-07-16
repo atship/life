@@ -1,4 +1,4 @@
-The common licence options are :
+The common license options are :
 
 1, NO WARRANTY
 	1, That is, if your data is lost, or money, or anything, the Author will disclaim any responsibility

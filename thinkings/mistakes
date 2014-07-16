@@ -30,3 +30,7 @@
 4, Humble in the face of GOD.
     1, The more conceited, the more failure you will get.
     2, The more Humble, the more works you can do, because you will working serious, no matter the working is important or not.
+
+5, 想做的东西太多，在惶惶然的时候，时间就溜掉了。不如选中一个，迅速上手，各个击破。总结并联接各个部分。
+    本次做脚本编辑器，先后两次，更改架构，还是发现数据结构选得不对，表达式使用树是够用的，但结点结构无法扩展，因为我根本就不知道需要从C＃映射到其它语言，没有考虑到这一点，结构难免不断更改，因为编译的时候发现又少了东西了。
+    搞清楚自己到底要什么，这个是很痛苦的过程，但不得不去做，否则就是现在的情况，无法扩展，处处受限制。

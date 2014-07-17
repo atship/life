@@ -1,0 +1,10 @@
+c/c++:
+in VS, create a win32 console project and set it to dll and empty.
+use __declspec(dllexport) to export your functions and classes
+write your code and build
+
+c#:
+in VS, create windows library project and you can select it's platform to dotnet3.5/dotnet40/dotnet4.5.1 ...
+write your code and build
+
+By the way, you can use DllImport attribute to import dll into the c# project

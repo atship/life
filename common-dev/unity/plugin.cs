@@ -1,5 +1,7 @@
-1, first, create dynamically library, whatever mac/win/linux/android/ios
-2, put the binary file into the Assets/Plugins/ folder, and unityfree will log error for your plugins, you can put it into the assets dir to avoid the warning
+1, first, create dynamically library, whatever mac/win/linux/android/ios, corresponding to platform arch, x86/x86_64/arm/...
+2, unitypro: put the binary file into the Assets/Plugins/ folder
+   unityfree: put c/c++ library into the project root folder, and c# library into the projectRoot/Plugins/ folder.
+   And after build for a target platform, copy the c/c++ library into the Data/Plugins/ folder
 3, create a c# wrapper class
 using System;
 using System.Runtime.InteropServices;

@@ -61,3 +61,8 @@ class MyEditorWindow extends EditorWindow
     // well, the inspector will re-enable when you click the target that contains the editor.
     // therefore, the data must save in the target, don't save in the editor, it can't serialize
     // even if you indicate the attribute as [Serializable] in the editor.
+    
+8, popup a editor window
+    MyEditorWindowClass win = ScriptableObject.CreateInstance<MyEditorWindowClass>();
+    window setup ...
+    win.ShowUtility();

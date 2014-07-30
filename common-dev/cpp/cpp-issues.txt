@@ -1,0 +1,24 @@
+1, 就算在头文件中添加了#pragma once, 或者 #ifndef __H__ ... #endif，也会出现 multiple definitions，实例如下：
+    namespace MySpace
+    {
+        const int CC = 0;
+        void func()
+        {
+        }
+    }
+    extern "C"
+    {
+        JNIEXPORT void JNICALL Java_com_my_class_myFunc(JNIEnv env, jclass clazz)
+        {
+            
+        }
+    }
+    
+    在多个cpp文件中包含此头文件的时候，将会出现 CC 重定义，func 和 Java_com_my_class_myFunc 重定义。
+    解决办法：
+        MySpace 中全部设置为 static 即可，因为这种情况，CC 和 func 都是全局性的，C语言必须如此设定。
+        
+    由于 JNIEXPORT 无法导出 static 函数，因为编译的时候将会提示 "visibility" attribute is ignored, 
+    运行时无法找到此函数，所以为了jni函数能正常使用，必须将定义写在cpp文件中
+    
+    综上，为了保证一切顺利，尽量将定义写在cpp文件中，将声明写在头文件中即可。

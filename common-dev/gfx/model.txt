@@ -1,0 +1,2 @@
+1, Model use blender coordinate system. That is, z up, y forward, x right. 
+    When export the model from blender, you should set z up, y forward.

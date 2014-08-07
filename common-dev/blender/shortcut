@@ -6,3 +6,5 @@ N               Show the properties of the selected object
 Space           Quick action search, often use it for import models
 Ctrl+Alt+U      Open the settings
 Ctrl+O          Open blender file
+Shift+F         roaming around the scene
+Numpad 0        preview using the main camera

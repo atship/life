@@ -1,0 +1,6 @@
+1，GetComponentsInChildren, GetComponentInChildren都将会返回包括自身在内的component，
+    因此有时候为了避免无限递归，迭代的时候需要从i=1开始
+    
+2，当写完插件后，如若须要debug，则先导出debug版本dll，再使用命令
+    unity安装目录\Editor\Data\MonoBleedingEdge\lib\mono\4.0\pdb2mdb.exe yourplugin.dll
+    生成yourplugin.dll.mdb，再将dll以及mdb文件都复制到unity工程的Assets/Plugins目录下即可

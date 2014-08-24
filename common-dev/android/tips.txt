@@ -4,3 +4,9 @@
 4, Toast must run on ui thread
 5, the android system would be crushed by key event dispatch time out
 6, the android system would be crushed by sound player dead lock
+7, decompile require autosign tool and apktool
+    1, java -jar apktool.jar d source.apk
+    2, modify smali/resources files
+    3, java -jar apktool.jar b source-dir
+    4, cd source-dir/dist
+    5, java -jar signapk.jar testkey.x509.pem testkey.pk8 source.apk dest.apk

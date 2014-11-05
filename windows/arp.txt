@@ -1,0 +1,5 @@
+Windows 7:
+    1, arp -a 查看网关IP和MAC
+    2, netsh i i show in 查看IDX
+    3, netsh -C "i i" add neighbors IDX "GATEWAYIP" "GATEWAY MAC"
+    4, arp -a 查看对应网关的MAC是否是静态

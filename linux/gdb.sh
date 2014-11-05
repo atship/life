@@ -7,6 +7,12 @@ b(reak) /home/test/work/test/src/test.cpp:17
 或者
 b(reak) 12
 
+#列出断点
+i(nfo) b
+
+#删除断点
+d 0/1/2...
+
 #查看变量的值
 p(rint)
 

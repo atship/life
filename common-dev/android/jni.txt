@@ -43,7 +43,7 @@ extern "C"{
     
 6, 最好将java的类指定到一个数组里面去，好检查是否写错，比如签名，类类型都是"Lpackage/Class;"这样的格式，而env->FindClass的时候需要的是"package/Class"的格式
 
-7, 如果在JNI_OnLoad函数中添加ptrace(TRACEME, 0, 0, 0)的话，第一次安装运行应用的时候，会导致无法动态替换DexClassLoader，因为它会卡在Dexopt的过程中
+7, 如果在JNI_OnLoad函数中添加ptrace(PTRACE_TRACEME, 0, 0, 0)的话，第一次安装运行应用的时候，会导致无法动态替换DexClassLoader，因为它会卡在Dexopt的过程中
 
 8, 静态注册
     1, 静态函数

@@ -1,0 +1,10 @@
+删除磁盘分区
+diskpart
+
+进入diskpart环境以后
+help 可查看帮助
+
+list disk 显示磁盘信息
+select disk 2 选择第三块磁盘
+select partition 1 选择第二个分区
+delete partition 删除此分区

@@ -1,0 +1,22 @@
+1，确认运行时不需要某些类的话，则可以
+    -dontwarn this.is.unused.package.and.classes
+    
+2，确定属于运行时提供的类的话，则可以
+    -libraryjars path/to/i.am.runtime.jar
+  or
+    -injars path/to/contained/classes/
+    
+3，确定需要保留指定类型(public/protected/private/native/static/final)的成员(methods/fields)
+    -keepclassmembers class ** {public static native <methods>;}
+    
+4，确定要保留有指定成员(methods/fields)的类，则可以
+    -keepclasseswithmembers class ** {public void INeedPreserved();}
+    
+5，保留某个类
+    -keep class i.am.class {*;}
+    
+6，保留某个包
+    -keep class i.am.package.**{*;}
+    
+7，保留继承自同一个父类的所有子类中，重写的父类的方法及类名字
+    -keep class * extends i.am.parent.class

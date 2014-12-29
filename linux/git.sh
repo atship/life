@@ -35,3 +35,66 @@ git mergetool
 
 #从.git目录检出文件，这样做可以只备份.git目录，而不需要将临时文件也打包
 git checkout -f
+
+git搭建服务器
+1, ssh
+    在服务器上创建一个git仓库，给客户端一个登录账号密码即可
+    客户端使用 git clone user@server:path/to/proj.git
+    之后即可使用 git push/git pull
+    
+2, git
+    此协议最好用来做只读服务器，因为它没有权限控制，无需认证，一旦开启push操作，任何人都可以往工程中push他们的东西
+    在服务器上创建一个git仓库，并执行git daemon --export-all --base-path=path/to/repos  [<path/to/repos/proj.git>, ...] &
+    在客户端上使用 git clone git://server/proj.git
+    之后即可使用git pull保持与服务器端同步
+    
+
+/**
+ *
+ * git model : tree-blob-commit-tag
+ *
+ *  tree # git write-tree/read-tree
+ *    +---- blob
+ *    +---- tree
+ *            +----blob
+ *
+ *  commit # git commit-tree
+ *    +---- root-tree
+ *    +---- parent-commit
+ *
+ *  refs/heads/master[branch] # git update-ref refs/heads/master commit-sha1
+ *    +---- commit
+ *
+ *  refs/tags/tag-name # git tag [-a] tag-name [-m msg]
+ *    +---- commit[tree][blob]
+ *
+ *  refs/remotes/origin[others]/HEAD # git remote add origin[others] url
+ *    +---- refs/remotes/origin[others]/master[branch]
+ *
+ *  refs/remotes/origin[others]/master[branch]
+ *    +---- commit
+ *
+ *  HEAD
+ *    +---- refs/heads/master[branch]
+ *
+ *  index # git ls-files --stage / git update-index --add file
+ *    +---- blob
+ *
+ *  config: # git config --global ..
+ *  [remote "origin"]
+ *      url = git://github.com/myname/myrepo.git
+ *      fetch = +refs/heads/master[*]:refs/remotes/origin/master[*]
+ *      fetch = ...
+ *      push = refs/heads/master[*]:refs/heads/[QA][PROGRAMMER][namespace]/master[*]
+ *
+ *  git gc
+ *    +---- objects/pack/pack-sha1.idx # git verify-pack -v .git/objects/pack/pack-sha1.idx
+ *    +---- objects/pack/pack-sha1.pack
+ *    +---- packed-refs
+ *
+ *  git history and branch
+ *  master: commit--commit--commit--commit--commit--commit
+ *                     \                     /
+ *  branch:            commit--commit--commit
+ *
+ */

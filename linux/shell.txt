@@ -17,6 +17,8 @@
 	2) for file in file1 file2 file3
 	   do
 	   done
+       
+    3) for i in $(seq 100); do echo $i; done
 
 4, read line
 	while read line

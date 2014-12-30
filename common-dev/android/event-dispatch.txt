@@ -1,0 +1,37 @@
+1, click on screen
+2, activity dispatchTouchEvent => DecorView superDispatchTouchEvent => FrameLayout-ViewGroup dispatchTouchEvent
+
+ViewGroup dispatchTouchEvent
+        |
+        +- allowIntercept
+                |
+                +- true
+                |   |
+                |   +- onInterceptTouchEvent
+                |               |
+                |               +- true ------------------+
+                |               |                         |
+                |               |                         |
+                |               +- false                  |
+                |                    |                    |
+                +- false             |                    |
+                    |                |                    |
+                    +- children -----+                    |
+                          |                               |
+                          +- View dispatchTouchEvent -----+
+                                    |
+                                    +- onTouchListener
+                                         |
+                                         +- true
+                                         |
+                                         +- false
+                                              |
+                                              +- onTouchEvent
+                                                     |
+                                                     +- true
+                                                     |   |
+                                                     |   +- next-action
+                                                     |
+                                                     +- false
+                                                          |
+                                                          ¡ù

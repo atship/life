@@ -2,11 +2,11 @@
 可以参照 http://www.igigo.net/post/archives/169
 
 2, heredoc
-	cat > file <<doc
+cat > file <<doc
 	This is your content
 	this is second line content
 	...
-	doc
+doc
 
 3, for
 	1) fileList="file1 file2 file3"
@@ -18,7 +18,8 @@
 	   do
 	   done
        
-    3) for i in $(seq 100); do echo $i; done
+    3) for i in $(seq 100); do echo $i; done # seq是外部命令
+       for i in {0..100}; do echo $i; done
 
 4, read line
 	while read line
@@ -31,3 +32,14 @@
 	${str:0:7} //wa ha h
 	${str:0-3} //awo
 	${#str} //字符串长度8
+
+6, 字符串拼接
+    str="wa ha"
+    str=$str" ha"
+    echo $str // wa ha ha
+    
+7, 字符串替换
+    str="wa ha ha"
+    ${str/ha/haha} //wa haha ha
+    ${str//ha/haha} //wa haha haha
+    

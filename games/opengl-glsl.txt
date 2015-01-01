@@ -1,0 +1,14 @@
+1, openGL pipeline
+	first, we define a model with vertex data, a vertex has attributes like as color, normal, position, texture-coord etc. and we send these vertex data as a stream into the GPU
+	second, the GPU wants to know which type of primitive they are, so you should tell the GPU are these one of GL_POINTS, GL_LINES, GL_TRIANGLES, etc.
+	third, you would tell the GPU that the MODELVIEWMATRIX to transform the vertex and the light position and illumination intensity
+	forth, the GPU will draw the primitives into triangles, and transform the vertex into the viewport space and clip the vertex through the viewport boundary, and back culling is occur
+	fifth, the GPU convert the triangles into fragments that interpolate the vertex attribute like as color/texture-coord though the face over the vertex
+	sixth, the GPU will apply the bound texture into the fragments
+	seventh, the GPU will make the fragments brighter if there are lights
+	eighth, the GPU will make the fragments fogable
+	ninth, the GPU will discard the fragments that alpha is below a certain threshold if GL_ALPHA_TEST is enabled and framebuffer has a RGBA format
+	tenth, the GPU will discard the fragments that depth is more larger than current fragments that draw into the framebuffer, you should enable GL_DEPTH_TEST and framebuffer has a depth buffer. 
+	eleventh, the GPU will discard the fragments that stencil fails by stencil buffer
+	twelfth, the GPU will combine the source fragment and the destination fragment color and alpha if you enabled GL_BLEND
+	thirteenth, the GPU will make the color palette has more colors by mixing colors that close to each other if you enabled GL_DITHER 

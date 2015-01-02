@@ -69,7 +69,8 @@ function cfont()
     done
 }
 
-this_file=`basename $0`
+this_full_path=${0//\\//}
+this_file=${this_full_path##*/}
 
 function help()
 {
@@ -110,17 +111,24 @@ function filter_package_name()
 
 function filter_project_path()
 {
-    project_path=$1
+	sdk_root=$(cd $URHO3D_HOME; pwd)
+	project_path=$1
     if [ -d $project_path ]; then
-        cfont -red "project path exists, do you want to replace the project files with newer version? (Y/N)" -n -reset
-        read _yes_
-        if [[ "$_yes_" == "Y" || "$_yes_" == "y" ]]; then
-            echo "yes"
-            return 0
-        else
-            echo "no"
-            return 1
-        fi
+		project_path=$(cd $1; pwd)
+        cfont -red " Project path $project_path exists\n Do you want to replace the project files with newer version?\n (y/n)" -n -reset
+		if [[ $project_path == $sdk_root ]]; then
+			cfont -cyan " The path is Urho3D sdk root, don't do this" -n -reset
+			return 1
+		else
+			read _yes_
+			if [[ "$_yes_" == "Y" || "$_yes_" == "y" ]]; then
+				echo "yes"
+				return 0
+			else
+				echo "no"
+				return 1
+			fi
+		fi
     else
         return 0
     fi
@@ -195,6 +203,7 @@ function make_project_dir()
     mkdir -p $project_path
     mkdir $project_path/Source
     mkdir $project_path/Bin
+	mkdir $project_path/Bin/CoreData
     mkdir $project_path/Bin/Data
     mkdir $project_path/Bin/Data/UI
     mkdir $project_path/Bin/Data/Textures
@@ -203,10 +212,11 @@ function make_project_dir()
 function copy_resources()
 {
     cd $URHO3D_HOME
-    cp *.sh $project_path/
+    cp *.sh *.bat $project_path/
     rm $project_path/$this_file
     cp .bash_helpers.sh $project_path/
-    cp Bin/CoreData/* $project_path/Bin/Data/ -r
+	write_android_bat
+    cp Bin/CoreData/* $project_path/Bin/CoreData/ -r
     cp Bin/Data/PostProcess $project_path/Bin/Data/ -r
     cp Bin/Data/UI/MessageBox.xml $project_path/Bin/Data/UI/
     cp Bin/Data/Textures/UrhoIcon.png $project_path/Bin/Data/Textures/Icon.png
@@ -340,6 +350,8 @@ void $project_name::Setup()
     // Modify engine startup parameters
     engineParameters_["WindowTitle"] = GetTypeName();
     engineParameters_["LogName"]     = GetTypeName() + ".log";
+	engineParameters_["WindowWidth"] = 1024;
+	engineParameters_["WindowHeight"] = 600;
     engineParameters_["FullScreen"]  = false;
     engineParameters_["Headless"]    = false;
 #endif
@@ -395,6 +407,73 @@ void $project_name::HandleKeyDown(StringHash eventType, VariantMap& eventData)
     }
 }
 cpp
+}
+
+function write_android_bat()
+{
+	cat > $project_path/cmake_android.bat <<cmake_android
+::
+:: Copyright (c) 2008-2014 the Urho3D project.
+::
+:: Permission is hereby granted, free of charge, to any person obtaining a copy
+:: of this software and associated documentation files (the "Software"), to deal
+:: in the Software without restriction, including without limitation the rights
+:: to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+:: copies of the Software, and to permit persons to whom the Software is
+:: furnished to do so, subject to the following conditions:
+::
+:: The above copyright notice and this permission notice shall be included in
+:: all copies or substantial portions of the Software.
+::
+:: THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+:: IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+:: FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+:: AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+:: LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+:: OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+:: THE SOFTWARE.
+::
+
+@echo off
+pushd %~dp0
+:: Define URHO3D_MKLINK to 1 to enable out-of-source build and symbolic linking of resources from Bin directory
+set "build=Source\Android"
+set "source=.."
+set "use_mklink="
+
+if "%PROCESSOR_ARCHITECTURE%" == "AMD64" (
+	set "PATH=%PATH%;%ANDROID_NDK%\prebuilt\windows-x86_64\bin"
+) else (
+	set "PATH=%PATH%;%ANDROID_NDK%\prebuilt\windows-i586\bin"
+)
+
+if exist android-Build\CMakeCache.txt. for /F "eol=/ delims=:= tokens=1-3" %%i in (android-Build\CMakeCache.txt) do if "%%i" == "URHO3D_MKLINK" set "use_mklink=%%k"
+:loop
+if not "%1" == "" (
+    if "%1" == "-DURHO3D_MKLINK" set "use_mklink=%~2"
+    shift
+    shift
+    goto loop
+)
+if "%use_mklink%" == "1" (
+    :: Remove cache file from opposite build directory
+    if exist Source\Android\CMakeCache.txt. del /F Source\Android\CMakeCache.txt
+    if exist Source\Android\CMakeFiles. rd /S /Q Source\Android\CMakeFiles
+    cmake -E make_directory android-Build
+    set "build=android-Build"
+    set "source=..\Source"
+    for %%d in (CoreData Data) do if not exist "Source\Android\assets\%%d". mklink /D "Source\Android\assets\%%d" "..\..\..\Bin\%%d"
+    for %%d in (src res assets jni) do if exist "Source\Android\%%d" if not exist "android-Build\%%d". mklink /D "android-Build\%%d" "..\Source\Android\%%d"
+    for %%f in (AndroidManifest.xml build.xml) do if not exist "android-Build\%%f". mklink "android-Build\%%f" "..\Source\Android\%%f"
+) else (
+    if exist android-Build\CMakeCache.txt. del /F android-Build\CMakeCache.txt
+    if exist android-Build\CMakeFiles. rd /S /Q android-Build\CMakeFiles
+) 
+echo on
+@set "OPT="
+cmake -E chdir %build% cmake %OPT% -G "Unix Makefiles" -DCMAKE_TOOLCHAIN_FILE=%URHO3D_HOME%\Source\CMake\Toolchains\android.toolchain.cmake %* %source%
+@popd
+cmake_android
 }
 
 if [ -z $URHO3D_HOME ]; then

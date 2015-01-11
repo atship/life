@@ -185,7 +185,7 @@ function filter_urho3d_build_tree()
 	fi
 	urho3d_build_tree="$(cd $1; pwd)"
 	if [ ! -d "$urho3d_build_tree/CMake" -o ! -d "$urho3d_build_tree/Source" ]; then
-		cfont -red "Invalid Urho3D build tree." -n -reset
+		cfont -red "Invalid Urho3D root folder." -n -reset
 		return 1
 	else
 		return 0
@@ -215,7 +215,7 @@ function parse_paramters()
         *)
             help
             cfont -red "Interactive mode\nCreate project now..." -n -reset
-			loop_input "Enter Urho3D build tree(enter to exit):" filter_urho3d_build_tree
+			loop_input "Enter Urho3D root folder(enter to exit):" filter_urho3d_build_tree
             loop_input "Enter project path(enter to exit):" filter_project_path
             loop_input "Enter project name(enter to exit):" filter_project_name
             loop_input "Enter package name(enter to exit):" filter_package_name
@@ -237,7 +237,6 @@ function make_project_dir()
 
 function copy_resources()
 {
-    #cd $URHO3D_HOME
 	cd $urho3d_build_tree
     cp *.sh *.bat $project_path/
     rm $project_path/$this_file
@@ -281,6 +280,13 @@ if [ $create_project_flag == 1 ]; then
     rm $project_path/Android/src/com -r
     mkdir -p $project_path/Android/src/${package_name//\./\/}
 fi
+
+cat > $project_path/Android/res/values/strings.xml <<string
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">$project_name</string>
+</resources>
+string
 
   cat >$project_path/Android/src/${package_name//\./\/}/$project_name.java <<cls
 package $package_name;
@@ -445,73 +451,6 @@ void $project_name::HandleKeyDown(StringHash eventType, VariantMap& eventData)
     }
 }
 cpp
-}
-
-function write_android_bat()
-{
-	cat > $project_path/cmake_android.bat <<cmake_android
-::
-:: Copyright (c) 2008-2014 the Urho3D project.
-::
-:: Permission is hereby granted, free of charge, to any person obtaining a copy
-:: of this software and associated documentation files (the "Software"), to deal
-:: in the Software without restriction, including without limitation the rights
-:: to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-:: copies of the Software, and to permit persons to whom the Software is
-:: furnished to do so, subject to the following conditions:
-::
-:: The above copyright notice and this permission notice shall be included in
-:: all copies or substantial portions of the Software.
-::
-:: THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-:: IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-:: FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-:: AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-:: LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-:: OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-:: THE SOFTWARE.
-::
-
-@echo off
-pushd %~dp0
-:: Define URHO3D_MKLINK to 1 to enable out-of-source build and symbolic linking of resources from Bin directory
-set "build=Source\Android"
-set "source=.."
-set "use_mklink="
-
-if "%PROCESSOR_ARCHITECTURE%" == "AMD64" (
-	set "PATH=%PATH%;%ANDROID_NDK%\prebuilt\windows-x86_64\bin"
-) else (
-	set "PATH=%PATH%;%ANDROID_NDK%\prebuilt\windows-i586\bin"
-)
-
-if exist android-Build\CMakeCache.txt. for /F "eol=/ delims=:= tokens=1-3" %%i in (android-Build\CMakeCache.txt) do if "%%i" == "URHO3D_MKLINK" set "use_mklink=%%k"
-:loop
-if not "%1" == "" (
-    if "%1" == "-DURHO3D_MKLINK" set "use_mklink=%~2"
-    shift
-    shift
-    goto loop
-)
-if "%use_mklink%" == "1" (
-    :: Remove cache file from opposite build directory
-    if exist Source\Android\CMakeCache.txt. del /F Source\Android\CMakeCache.txt
-    if exist Source\Android\CMakeFiles. rd /S /Q Source\Android\CMakeFiles
-    cmake -E make_directory android-Build
-    set "build=android-Build"
-    set "source=..\Source"
-    for %%d in (CoreData Data) do if not exist "Source\Android\assets\%%d". mklink /D "Source\Android\assets\%%d" "..\..\..\Bin\%%d"
-    for %%d in (src res assets jni) do if exist "Source\Android\%%d" if not exist "android-Build\%%d". mklink /D "android-Build\%%d" "..\Source\Android\%%d"
-    for %%f in (AndroidManifest.xml build.xml) do if not exist "android-Build\%%f". mklink "android-Build\%%f" "..\Source\Android\%%f"
-) else (
-    if exist android-Build\CMakeCache.txt. del /F android-Build\CMakeCache.txt
-    if exist android-Build\CMakeFiles. rd /S /Q android-Build\CMakeFiles
-) 
-echo on
-@set "OPT="
-cmake -E chdir %build% cmake %OPT% -G "Unix Makefiles" -DCMAKE_TOOLCHAIN_FILE=%URHO3D_HOME%\Source\CMake\Toolchains\android.toolchain.cmake %* %source%
-@popd
-cmake_android
 }
 
 parse_paramters $*

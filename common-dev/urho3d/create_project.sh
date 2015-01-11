@@ -72,11 +72,12 @@ function cfont()
 this_full_path=${0//\\//}
 this_file=${this_full_path##*/}
 
+
 function help()
 {
     echo "Usage:"
-    echo "$0 -c project-path project-name package-name"
-    echo "$0 -u project-path"
+    echo "$0 -c urho3d_build_tree project-path project-name package-name"
+    echo "$0 -u urho3d_build_tree project-path"
     echo -e "\t-c\tcreate project"
     echo -e "\t-u\tupdate project with newer version resources"
     echo 
@@ -99,24 +100,33 @@ function loop_input()
 
 function filter_project_name()
 {
+	if [ "$1" == "" ]; then
+		exit
+	fi
     project_name=$1
     return 0
 }
 
 function filter_package_name()
 {
+	if [ "$1" == "" ]; then
+		exit
+	fi
     package_name=$1
     return 0
 }
 
 function filter_project_path()
 {
-	sdk_root=$(cd $URHO3D_HOME; pwd)
+	if [ "$1" == "" ]; then
+		exit
+	fi
+	sdk_root="$urho3d_build_tree"
 	project_path=$1
     if [ -d $project_path ]; then
 		project_path=$(cd $1; pwd)
         cfont -red " Project path $project_path exists\n Do you want to replace the project files with newer version?\n (y/n)" -n -reset
-		if [[ $project_path == $sdk_root ]]; then
+		if [[ "$project_path" == "$sdk_root" ]]; then
 			cfont -cyan " The path is Urho3D sdk root, don't do this" -n -reset
 			return 1
 		else
@@ -168,20 +178,34 @@ function summary_and_confirm()
     fi
 }
 
+function filter_urho3d_build_tree()
+{
+	if [ "$1" == "" ]; then
+		exit
+	fi
+	urho3d_build_tree="$(cd $1; pwd)"
+	if [ ! -d "$urho3d_build_tree/CMake" -o ! -d "$urho3d_build_tree/Source" ]; then
+		cfont -red "Invalid Urho3D build tree." -n -reset
+		return 1
+	else
+		return 0
+	fi
+}
+
 function parse_paramters()
 {
-    case "$1" in
+    case "$2" in
         "-c")
-            filter_project_path $2
+            filter_project_path $3
             if [ $? != 0 ]; then
                 loop_input "Enter project path:" filter_project_path
             fi
-            filter_project_name $3
-            filter_package_name $4
+            filter_project_name $4
+            filter_package_name $5
         ;;
 
         "-u")
-            filter_project_path_4update $2
+            filter_project_path_4update $3
             if [ $? != 0 ]; then
                 loop_input "Enter the project path:" filter_project_path_4update
             fi
@@ -190,10 +214,11 @@ function parse_paramters()
 
         *)
             help
-            cfont -red "Create project-----------------" -n -reset
-            loop_input "Enter project path:" filter_project_path
-            loop_input "Enter project name:" filter_project_name
-            loop_input "Enter package name:" filter_package_name
+            cfont -red "Interactive mode\nCreate project now..." -n -reset
+			loop_input "Enter Urho3D build tree(enter to exit):" filter_urho3d_build_tree
+            loop_input "Enter project path(enter to exit):" filter_project_path
+            loop_input "Enter project name(enter to exit):" filter_project_name
+            loop_input "Enter package name(enter to exit):" filter_package_name
         ;;
     esac
 }
@@ -201,32 +226,35 @@ function parse_paramters()
 function make_project_dir()
 {
     mkdir -p $project_path
-    mkdir $project_path/Source
+	mkdir $project_path/Android
     mkdir $project_path/Bin
 	mkdir $project_path/Bin/CoreData
     mkdir $project_path/Bin/Data
     mkdir $project_path/Bin/Data/UI
     mkdir $project_path/Bin/Data/Textures
+	mkdir $project_path/CMake
 }
 
 function copy_resources()
 {
-    cd $URHO3D_HOME
+    #cd $URHO3D_HOME
+	cd $urho3d_build_tree
     cp *.sh *.bat $project_path/
     rm $project_path/$this_file
     cp .bash_helpers.sh $project_path/
-	write_android_bat
+	#write_android_bat
     cp Bin/CoreData/* $project_path/Bin/CoreData/ -r
     cp Bin/Data/PostProcess $project_path/Bin/Data/ -r
     cp Bin/Data/UI/MessageBox.xml $project_path/Bin/Data/UI/
     cp Bin/Data/Textures/UrhoIcon.png $project_path/Bin/Data/Textures/Icon.png
-    cp Source/Android $project_path/Source/ -r
+    cp Android $project_path/ -r
+	cp Cmake $project_path/ -r
     rename_package_name
 }
 
 function rename_package_name()
 {
-   cat > $project_path/Source/Android/AndroidManifest.xml <<mainifest
+   cat > $project_path/Android/AndroidManifest.xml <<mainifest
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="$package_name"
@@ -250,11 +278,11 @@ function rename_package_name()
 </manifest>
 mainifest
 if [ $create_project_flag == 1 ]; then
-    rm $project_path/Source/Android/src/com -r
-    mkdir -p $project_path/Source/Android/src/${package_name//\./\/}
+    rm $project_path/Android/src/com -r
+    mkdir -p $project_path/Android/src/${package_name//\./\/}
 fi
 
-  cat >$project_path/Source/Android/src/${package_name//\./\/}/$project_name.java <<cls
+  cat >$project_path/Android/src/${package_name//\./\/}/$project_name.java <<cls
 package $package_name;
 
 import org.libsdl.app.SDLActivity;
@@ -264,16 +292,26 @@ cls
 
 function cmake_lists_txt()
 {
-    cat > $project_path/Source/CMakeLists.txt <<cmake_list
+    cat > $project_path/CMakeLists.txt <<cmake_list
 # Set project name
 project ($project_name)
 # Set minimum version
 cmake_minimum_required (VERSION 2.8.6)
 if (COMMAND cmake_policy)
     cmake_policy (SET CMP0003 NEW)
+    if (CMAKE_VERSION VERSION_GREATER 2.8.12 OR CMAKE_VERSION VERSION_EQUAL 2.8.12)
+        # INTERFACE_LINK_LIBRARIES defines the link interface
+        cmake_policy (SET CMP0022 NEW)
+    endif ()
+    if (CMAKE_VERSION VERSION_GREATER 3.0.0 OR CMAKE_VERSION VERSION_EQUAL 3.0.0)
+        # Disallow use of the LOCATION target property - therefore we set to OLD as we still need it
+        cmake_policy (SET CMP0026 OLD)
+        # MACOSX_RPATH is enabled by default
+        cmake_policy (SET CMP0042 NEW)
+    endif ()
 endif ()
 # Set CMake modules search path
-set (CMAKE_MODULE_PATH \$ENV{URHO3D_HOME}/Source/CMake/Modules CACHE PATH "Path to Urho3D-specific CMake modules")
+set (CMAKE_MODULE_PATH \${CMAKE_SOURCE_DIR}/CMake/Modules)
 # Include Urho3D Cmake common module
 include (Urho3D-CMake-common)
 # Find Urho3D library
@@ -290,11 +328,11 @@ cmake_list
 
 function cat_project_source()
 {
-    cat > $project_path/Source/$project_name.h <<source
+    cat > $project_path/$project_name.h <<source
 
 #pragma once
 
-#include "Application.h"
+#include <Urho3D/Engine/Application.h>
 
 // All Urho3D classes reside in namespace Urho3D
 using namespace Urho3D;
@@ -325,14 +363,14 @@ private:
 };
 source
 
-    cat > $project_path/Source/$project_name.cpp <<cpp
+    cat > $project_path/$project_name.cpp <<cpp
 
-#include "CoreEvents.h"
-#include "Engine.h"
-#include "Input.h"
-#include "ProcessUtils.h"
-#include "Graphics.h"
-#include "ResourceCache.h"
+#include <Urho3D/Core/CoreEvents.h>
+#include <Urho3D/Engine/Engine.h>
+#include <Urho3D/Input/Input.h>
+#include <Urho3D/Core/ProcessUtils.h>
+#include <Urho3D/Graphics/Graphics.h>
+#include <Urho3D/Resource/ResourceCache.h>
 
 #include "$project_name.h"
 
@@ -475,14 +513,6 @@ cmake -E chdir %build% cmake %OPT% -G "Unix Makefiles" -DCMAKE_TOOLCHAIN_FILE=%U
 @popd
 cmake_android
 }
-
-if [ -z $URHO3D_HOME ]; then
-    cfont -red "The env URHO3D_HOME is not set, please set it first." -n -reset
-    exit
-elif [ ! -d $URHO3D_HOME ]; then
-    cfont -red "The env URHO3D_HOME is invalid, please set it to your Urho3D project path" -n -reset
-    exit
-fi
 
 parse_paramters $*
 if [ ! -d $project_path ]; then

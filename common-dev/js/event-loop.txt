@@ -1,0 +1,16 @@
+    Stack                Web-API
+     |                      |
+     |                      |
+     |                      |
+    main                    |
+     +--------->-------setTimeOut
+     |                    ajax()
+     |                     DOM
+     A                      |
+     |                      |
+     +---event-loop         |
+            |               |
+            A               V
+            |               |
+            +               |
+         callback queue ----+

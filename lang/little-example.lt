@@ -1,0 +1,40 @@
+(define (and ...) (&& ...))
+(define (or ...) (|| ...))
+(define myfunc (
+        lambda (x y) (+ x y)) )
+
+(map myfunc `((1 2) (3 4) ((5 7 8) 6)) )
+
+(const a 3)
+(const b 4)
+(const pi 3.1415926)
+
+(case myfunc 
+    ('procedure' (out 'yes, procedure'))
+    ('number' (out 'yes, number')) )
+    
+(if (is myfunc 'number') (out 'yes, number')
+    (is myfunc 'procedure') (out 'yes, procedure') 
+    (has myfunc 'lambda') (out 'defined by lambda')
+    _ (out 'unknown type') )
+
+(if (= (in myvar) 3) (out 'good, 3 is assigned')
+    (= myvar 4) (out 'well, 4 is assigned') )
+    
+(case (in myvar)
+    (3 (out 'good, 3 is assigned'))
+    (4 (out 'well, 4 is assigned'))
+    _ (out 'i don\'t know what is the value means by ' myvar ' very good') )
+
+(if (? myvar) (out 'well done')
+    (out 'myvar is null ') )
+    
+(if (! myvar) (out @'/d/done.txt' 'well, false' 1 2 3 4 5 6 7 8 9 012))
+
+(if (= (in myvar @'/d/done.txt') 'well, false') (out 'done, read finished'))
+
+(define setenv (lambda (key)))
+
+(define MyClass (
+    lambda (name) (`('key' name 'key2' 30 'key3' (lambda (good) (out 'good')) ) )
+    ))

@@ -13,8 +13,8 @@
             <Keywords name="Numbers, suffix1"></Keywords>
             <Keywords name="Numbers, suffix2"></Keywords>
             <Keywords name="Numbers, range"></Keywords>
-            <Keywords name="Operators1">+ - * / ^ | &amp; . ! ? @</Keywords>
-            <Keywords name="Operators2">= &amp;&amp; || &gt; &lt; &gt;= &lt;=</Keywords>
+            <Keywords name="Operators1">+ - * / ^ | &amp; . ? @</Keywords>
+            <Keywords name="Operators2">= &gt; &lt; &gt;= &lt;=</Keywords>
             <Keywords name="Folders in code1, open">(</Keywords>
             <Keywords name="Folders in code1, middle"></Keywords>
             <Keywords name="Folders in code1, close">)</Keywords>
@@ -24,7 +24,7 @@
             <Keywords name="Folders in comment, open"></Keywords>
             <Keywords name="Folders in comment, middle"></Keywords>
             <Keywords name="Folders in comment, close"></Keywords>
-            <Keywords name="Keywords1">define map in out case if is has env const lambda true false</Keywords>
+            <Keywords name="Keywords1">define map in out case if is has env const lambda true false first second not and or</Keywords>
             <Keywords name="Keywords2"></Keywords>
             <Keywords name="Keywords3"></Keywords>
             <Keywords name="Keywords4"></Keywords>

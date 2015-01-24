@@ -123,6 +123,7 @@ function filter_project_path()
 	fi
 	sdk_root="$urho3d_build_tree"
 	project_path=$1
+    origin_project_path=$1
     if [ -d $project_path ]; then
 		project_path=$(cd $1; pwd)
         cfont -red " Project path $project_path exists\n Do you want to replace the project files with newer version?\n (y/n)" -n -reset
@@ -194,8 +195,12 @@ function filter_urho3d_build_tree()
 
 function parse_paramters()
 {
-    case "$2" in
+    case "$1" in
         "-c")
+            filter_urho3d_build_tree $2
+            if [ $? != 0 ]; then
+                loop_input "Enter Urho3D root folder(enter to exit):" filter_urho3d_build_tree
+            fi
             filter_project_path $3
             if [ $? != 0 ]; then
                 loop_input "Enter project path:" filter_project_path
@@ -205,6 +210,10 @@ function parse_paramters()
         ;;
 
         "-u")
+            filter_urho3d_build_tree $2
+            if [ $? != 0 ]; then
+                loop_input "Enter Urho3D root folder(enter to exit):" filter_urho3d_build_tree
+            fi
             filter_project_path_4update $3
             if [ $? != 0 ]; then
                 loop_input "Enter the project path:" filter_project_path_4update
@@ -226,28 +235,60 @@ function parse_paramters()
 function make_project_dir()
 {
     mkdir -p $project_path
-	mkdir $project_path/Android
-    mkdir $project_path/Bin
-	mkdir $project_path/Bin/CoreData
-    mkdir $project_path/Bin/Data
-    mkdir $project_path/Bin/Data/UI
-    mkdir $project_path/Bin/Data/Textures
+    mkdir -p $project_path/Android/src/org
+    mkdir -p $project_path/Android/res/values
+	mkdir $project_path/bin/CoreData
+    mkdir -p $project_path/bin/Data/UI
+    mkdir -p $project_path/bin/Data/Textures
 	mkdir $project_path/CMake
+}
+
+# We still need this.
+windows() { [[ -n "$WINDIR" ]]; }
+
+# Cross-platform symlink function. With one parameter, it will check
+# whether the parameter is a symlink. With two parameters, it will create
+# a symlink to a file or directory, with syntax: link $linkname $target
+link() {
+    if [[ -z "$2" ]]; then
+        # Link-checking mode.
+        if windows; then
+            fsutil reparsepoint query "$1" > /dev/null
+        else
+            [[ -h "$1" ]]
+        fi
+    else
+        # Link-creation mode.
+        if windows; then
+            # Windows needs to be told if it's a directory or not. Infer that.
+            # Also: note that we convert `/` to `\`. In this case it's necessary.
+            if [[ -d "$2" ]]; then
+                cmd <<< "mklink /D \"${1//\//\\}\" \"${2//\//\\}\"" > /dev/null
+            else
+                cmd <<< "mklink \"${1//\//\\}\" \"${2//\//\\}\"" > /dev/null
+            fi
+        else
+            # You know what? I think ln's parameters are backwards.
+            ln -s "$2" "$1"
+        fi
+    fi
 }
 
 function copy_resources()
 {
 	cd $urho3d_build_tree
     cp *.sh *.bat $project_path/
-    rm $project_path/$this_file
+    #rm $project_path/$this_file
     cp .bash_helpers.sh $project_path/
 	#write_android_bat
-    cp Bin/CoreData/* $project_path/Bin/CoreData/ -r
-    cp Bin/Data/PostProcess $project_path/Bin/Data/ -r
-    cp Bin/Data/UI/MessageBox.xml $project_path/Bin/Data/UI/
-    cp Bin/Data/Textures/UrhoIcon.png $project_path/Bin/Data/Textures/Icon.png
-    cp Android $project_path/ -r
-	cp Cmake $project_path/ -r
+    cp bin/CoreData/* $project_path/bin/CoreData/ -r
+    cp bin/Data/PostProcess $project_path/bin/Data/ -r
+    cp bin/Data/UI/MessageBox.xml $project_path/bin/Data/UI/
+    cp bin/Data/Textures/UrhoIcon.png $project_path/bin/Data/Textures/Icon.png
+    #cp Android $project_path/ -r
+    cp Android/src/org $project_path/Android/src/ -r
+    link $origin_project_path/Android/assets/ $origin_project_path/bin/
+	cp CMake $project_path/ -r
     rename_package_name
 }
 
@@ -277,7 +318,6 @@ function rename_package_name()
 </manifest>
 mainifest
 if [ $create_project_flag == 1 ]; then
-    rm $project_path/Android/src/com -r
     mkdir -p $project_path/Android/src/${package_name//\./\/}
 fi
 
@@ -370,7 +410,7 @@ private:
 source
 
     cat > $project_path/$project_name.cpp <<cpp
-
+#include <Urho3D/Urho3D.h>
 #include <Urho3D/Core/CoreEvents.h>
 #include <Urho3D/Engine/Engine.h>
 #include <Urho3D/Input/Input.h>

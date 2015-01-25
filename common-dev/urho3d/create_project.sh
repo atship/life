@@ -83,6 +83,9 @@ function help()
     echo 
 }
 
+# We still need this.
+windows() { [[ -n "$WINDIR" ]]; }
+
 function loop_input()
 {
     message=$1
@@ -123,9 +126,14 @@ function filter_project_path()
 	fi
 	sdk_root="$urho3d_build_tree"
 	project_path=$1
-    origin_project_path=$1
     if [ -d $project_path ]; then
 		project_path=$(cd $1; pwd)
+        if windows; then
+            drive=${project_path:1:1}
+            project_home=${project_path/\/$drive/$drive:}
+        else
+            project_home=$project_path
+        fi
         cfont -red " Project path $project_path exists\n Do you want to replace the project files with newer version?\n (y/n)" -n -reset
 		if [[ "$project_path" == "$sdk_root" ]]; then
 			cfont -cyan " The path is Urho3D sdk root, don't do this" -n -reset
@@ -185,6 +193,10 @@ function filter_urho3d_build_tree()
 		exit
 	fi
 	urho3d_build_tree="$(cd $1; pwd)"
+    if windows; then
+        urho3d_drive=${urho3d_build_tree:1:1}
+        urho3d_home=${urho3d_build_tree/\/$urho3d_drive/$urho3d_drive:}
+    fi
 	if [ ! -d "$urho3d_build_tree/CMake" -o ! -d "$urho3d_build_tree/Source" ]; then
 		cfont -red "Invalid Urho3D root folder." -n -reset
 		return 1
@@ -243,9 +255,6 @@ function make_project_dir()
 	mkdir $project_path/CMake
 }
 
-# We still need this.
-windows() { [[ -n "$WINDIR" ]]; }
-
 # Cross-platform symlink function. With one parameter, it will check
 # whether the parameter is a symlink. With two parameters, it will create
 # a symlink to a file or directory, with syntax: link $linkname $target
@@ -262,6 +271,7 @@ link() {
         if windows; then
             # Windows needs to be told if it's a directory or not. Infer that.
             # Also: note that we convert `/` to `\`. In this case it's necessary.
+            
             if [[ -d "$2" ]]; then
                 cmd <<< "mklink /D \"${1//\//\\}\" \"${2//\//\\}\"" > /dev/null
             else
@@ -279,8 +289,6 @@ function copy_resources()
 	cd $urho3d_build_tree
     if windows; then
         cp cmake_generic.bat $project_path/
-        drive=${urho3d_build_tree:1:1}
-        urho3d_home=${urho3d_build_tree/\/$drive/$drive:}
         cat > $project_path/cmake_android.bat <<android
 @%~dp0\cmake_generic.bat %* -DANDROID=1 -DURHO3D_HOME=$urho3d_home/%1
 android
@@ -292,6 +300,9 @@ android
             vs="-VS=10"
         fi
         cat > $project_path/cmake_vs.bat <<vs
+mkdir %1\bin
+mklink /D %1\bin\Data ..\..\bin\Data
+mklink /D %1\bin\CoreData ..\..\bin\CoreData
 @%~dp0\cmake_generic.bat %* $vs -DURHO3D_HOME=$urho3d_home/%1
 vs
     else
@@ -316,7 +327,7 @@ android
     cp bin/Data/Textures/UrhoIcon.png $project_path/bin/Data/Textures/Icon.png
     #cp Android $project_path/ -r
     cp Android/src/org $project_path/Android/src/ -r
-    link $origin_project_path/Android/assets/ $origin_project_path/bin/
+    link $project_home/Android/assets/ $project_home/bin/
 	cp CMake $project_path/ -r
     rename_package_name
 }

@@ -446,8 +446,10 @@ private:
     void HandleUpdate(StringHash eventType, VariantMap& eventData);
     /// Handle key down event to process key controls common to all samples.
     void HandleKeyDown(StringHash eventType, VariantMap& eventData);
+#if !defined(ANDROID) && !defined(IOS)
     /// Set custom window Title & Icon
     void SetWindowTitleAndIcon();
+#endif
 };
 source
 
@@ -486,8 +488,10 @@ void $project_name::Setup()
 void $project_name::Start()
 {
     //TODO start your project logic here
+#if !defined(ANDROID) && !defined(IOS)
     SetWindowTitleAndIcon();
     GetSubsystem<Input>()->SetMouseVisible(true);
+#endif
 
     SubscribeToEvents();    
 }
@@ -506,6 +510,7 @@ void $project_name::HandleUpdate(StringHash eventType, VariantMap& eventData)
     //TODO Do nothing for now, could be extended to eg. animate the display
 }
 
+#if !defined(ANDROID) && !defined(IOS)
 void $project_name::SetWindowTitleAndIcon()
 {
     ResourceCache* cache = GetSubsystem<ResourceCache>();
@@ -514,6 +519,7 @@ void $project_name::SetWindowTitleAndIcon()
     graphics->SetWindowIcon(icon);
     graphics->SetWindowTitle("$project_name");
 }
+#endif
 
 void $project_name::HandleKeyDown(StringHash eventType, VariantMap& eventData)
 {

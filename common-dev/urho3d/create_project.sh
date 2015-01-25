@@ -291,6 +291,7 @@ function copy_resources()
     if windows; then
         cp cmake_generic.bat $project_path/
         cat > $project_path/cmake_android.bat <<android
+echo @%~dp0\cmake_generic.bat %* -DANDROID=1 -DURHO3D_HOME=$urho3d_home/%1 > cmake_remake_android.bat
 @%~dp0\cmake_generic.bat %* -DANDROID=1 -DURHO3D_HOME=$urho3d_home/%1
 android
         if [ -n "$VS120COMNTOOLS" ]; then
@@ -301,24 +302,27 @@ android
             vs="-VS=10"
         fi
         cat > $project_path/cmake_vs.bat <<vs
-mkdir %1\bin
-mklink /D %1\bin\Data ..\..\bin\Data
-mklink /D %1\bin\CoreData ..\..\bin\CoreData
+mkdir "%1\bin"
+mklink /D "%1\bin\Data" "$project_home\bin\Data"
+mklink /D "%1\bin\CoreData" "$project_home\bin\CoreData"
+echo @%~dp0\cmake_generic.bat %* $vs -DURHO3D_HOME=$urho3d_home/%1 > cmake_remake_vs.bat
 @%~dp0\cmake_generic.bat %* $vs -DURHO3D_HOME=$urho3d_home/%1
 vs
-    else
-        cp cmake_generic.sh $project_path/
-        cat > $project_path/cmake_ios.sh <<ios
+    fi
+    cp cmake_generic.sh $project_path/
+    cat > $project_path/cmake_ios.sh <<ios
+echo \$(dirname \$0)/cmake_macosx.sh \$@ -DIOS=1 > cmake_remake_ios.sh
 \$(dirname \$0)/cmake_macosx.sh \$@ -DIOS=1
 ios
-        cat > $project_path/cmake_macosx.sh <<mac
+    cat > $project_path/cmake_macosx.sh <<mac
+echo \$(dirname \$0)/cmake_generic.sh \$@ -G Xcode -DURHO3D_HOME=$urho3d_build_tree/\$1 > cmake_remake_macosx.sh
 \$(dirname \$0)/cmake_generic.sh \$@ -G Xcode -DURHO3D_HOME=$urho3d_build_tree/\$1
 mac
-        cat > $project_path/cmake_android.sh <<android
+    cat > $project_path/cmake_android.sh <<android
+echo '\$(dirname \$0)/cmake_generic.sh \$@ -DANDROID=1 -DURHO3D_HOME=$urho3d_build_tree/\$1' > cmake_remake_android.sh
 \$(dirname \$0)/cmake_generic.sh \$@ -DANDROID=1 -DURHO3D_HOME=$urho3d_build_tree/\$1
 android
-        cp .bash_helpers.sh $project_path/
-    fi
+    cp .bash_helpers.sh $project_path/
     #cp *.sh *.bat $project_path/
     #rm $project_path/$this_file
 	#write_android_bat

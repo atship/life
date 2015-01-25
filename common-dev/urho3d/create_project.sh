@@ -237,7 +237,7 @@ function make_project_dir()
     mkdir -p $project_path
     mkdir -p $project_path/Android/src/org
     mkdir -p $project_path/Android/res/values
-	mkdir $project_path/bin/CoreData
+	mkdir -p $project_path/bin/CoreData
     mkdir -p $project_path/bin/Data/UI
     mkdir -p $project_path/bin/Data/Textures
 	mkdir $project_path/CMake
@@ -277,11 +277,40 @@ link() {
 function copy_resources()
 {
 	cd $urho3d_build_tree
-    cp *.sh *.bat $project_path/
+    if windows; then
+        cp cmake_generic.bat $project_path/
+        drive=${urho3d_build_tree:1:1}
+        urho3d_home=${urho3d_build_tree/\/$drive/$drive:}
+        cat > $project_path/cmake_android.bat <<android
+@%~dp0\cmake_generic.bat %* -DANDROID=1 -DURHO3D_HOME=$urho3d_home/%1
+android
+        if [ -n "$VS120COMNTOOLS" ]; then
+            vs='-VS=12'
+        elif [ -n "$VS110COMNTOOLS" ]; then
+            vs='-VS=11'
+        elif [ -n "$VS100COMNTOOLS" ]; then
+            vs="-VS=10"
+        fi
+        cat > $project_path/cmake_vs.bat <<vs
+@%~dp0\cmake_generic.bat %* $vs -DURHO3D_HOME=$urho3d_home/%1
+vs
+    else
+        cp cmake_generic.sh $project_path/
+        cat > $project_path/cmake_ios.sh <<ios
+\$(dirname \$0)/cmake_macosx.sh \$@ -DIOS=1
+ios
+        cat > $project_path/cmake_macosx.sh <<mac
+\$(dirname \$0)/cmake_generic.sh \$@ -G Xcode -DURHO3D_HOME=$urho3d_build_tree/\$1
+mac
+        cat > $project_path/cmake_android.sh <<android
+\$(dirname \$0)/cmake_generic.sh \$@ -DANDROID=1 -DURHO3D_HOME=$urho3d_build_tree/\$1
+android
+        cp .bash_helpers.sh $project_path/
+    fi
+    #cp *.sh *.bat $project_path/
     #rm $project_path/$this_file
-    cp .bash_helpers.sh $project_path/
 	#write_android_bat
-    cp bin/CoreData/* $project_path/bin/CoreData/ -r
+    cp bin/CoreData/* $project_path/bin/Data/ -r
     cp bin/Data/PostProcess $project_path/bin/Data/ -r
     cp bin/Data/UI/MessageBox.xml $project_path/bin/Data/UI/
     cp bin/Data/Textures/UrhoIcon.png $project_path/bin/Data/Textures/Icon.png

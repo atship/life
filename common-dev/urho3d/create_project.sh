@@ -249,6 +249,7 @@ function make_project_dir()
     mkdir -p $project_path
     mkdir -p $project_path/Android/src/org
     mkdir -p $project_path/Android/res/values
+    mkdir -p $project_path/Android/res/drawable
 	mkdir -p $project_path/bin/CoreData
     mkdir -p $project_path/bin/Data/UI
     mkdir -p $project_path/bin/Data/Textures
@@ -325,6 +326,7 @@ android
     cp bin/Data/PostProcess $project_path/bin/Data/ -r
     cp bin/Data/UI/MessageBox.xml $project_path/bin/Data/UI/
     cp bin/Data/Textures/UrhoIcon.png $project_path/bin/Data/Textures/Icon.png
+    cp bin/Data/Textures/UrhoIcon.png $project_path/Android/res/icon.png
     #cp Android $project_path/ -r
     cp Android/src/org $project_path/Android/src/ -r
     link $project_home/Android/assets/ $project_home/bin/

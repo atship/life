@@ -36,6 +36,9 @@ git mergetool
 #从.git目录检出文件，这样做可以只备份.git目录，而不需要将临时文件也打包
 git checkout -f
 
+#轻量clone(git clone git://host/proj.git --depth=1)以后，需要获取全部历史记录的时候
+git fetch --unshallow
+
 git搭建服务器
 1, ssh
     在服务器上创建一个git仓库，给客户端一个登录账号密码即可

@@ -1,0 +1,8 @@
+1, Camera projection
+    maps the locations in the world to the locations in the screen
+    
+    therefore, the common projections are perspective and orthographic
+    
+    1) View Box
+    perspective: View Frustum
+    orthographic: View Box   left/right/top/bottom/near/far, the origin is in the center of the screen

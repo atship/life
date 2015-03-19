@@ -28,10 +28,44 @@ ViewGroup dispatchTouchEvent
                                               |
                                               +- onTouchEvent
                                                      |
-                                                     +- true
-                                                     |   |
-                                                     |   +- next-action
+                                                     +- true then target
                                                      |
                                                      +- false
                                                           |
-                                                          ¡ù
+                                                   next-sibling-loop
+                                                          |
+                                                          +- false then parent
+                                                          |
+                                                          |
+                                                          +- true then target
+                                                          
+                                                          
+                                                          
+                                                          
+; find the target
+(define (dispatchTouchEvent view)
+    (
+        is view a
+        (
+            'ViewGroup' 
+            (
+                allowIntercept ? 
+                (
+                    onInterceptTouchEvent ? (dispatchTouchEvent (cast view 'View')) (dispatchTouchEvent (first view.children) ? () (dispatchTouchEvent (second view.children)))
+                )
+                (
+                    dispatchTouchEvent (car view.children) ? () (dispatchTouchEvent (second view.children))
+                )
+            )
+            'View' 
+            (
+                onTouchListener ? (view)
+                (
+                    onTouchEvent ? (view) (#f)
+                )
+            )
+        )
+    )
+)
+
+(dispatchTouchEvent DecorView)

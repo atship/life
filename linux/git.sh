@@ -47,7 +47,7 @@ git搭建服务器
     
 2, git
     此协议最好用来做只读服务器，因为它没有权限控制，无需认证，一旦开启push操作，任何人都可以往工程中push他们的东西
-    在服务器上创建一个git仓库，并执行git daemon --export-all --base-path=path/to/repos  [<path/to/repos/proj.git>, ...] &
+    在服务器上创建一个git仓库，并执行git daemon --export-all --base-path=path/to/repos [--enable=receive-pack(允许客户端push)] [<path/to/repos/proj.git>, ...] &
     在客户端上使用 git clone git://server/proj.git
     之后即可使用git pull保持与服务器端同步
     

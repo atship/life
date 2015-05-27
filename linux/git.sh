@@ -51,6 +51,8 @@ git搭建服务器
     在客户端上使用 git clone git://server/proj.git
     之后即可使用git pull保持与服务器端同步
     
+3，windows下的git有个BUG，需要设置一下才能push到以git协议搭建的服务器上
+	git config --global sendpack.sideband false
 
 /**
  *

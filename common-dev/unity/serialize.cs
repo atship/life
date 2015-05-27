@@ -1,6 +1,6 @@
 using System;
 
-// the serializ will occur in editor, when you play or export it to the platform, that is , the data will save in the scene
+// the serialize will occur in editor, when you play or export it to the platform, that is , the data will save in the scene
 [Serializable]
 public class SerializeClass
 {

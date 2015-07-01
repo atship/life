@@ -1,0 +1,50 @@
+存在的目的：
+	1，异步处理，并行处理，长时间运行
+		下载文件
+		播放音乐
+		数据处理（加密文件，扫描磁盘等）
+		要实现这个目的，为何不使用 Thread
+			在activity中使用thread，无法保证activity不会被杀掉，如果被杀，而thread无论是否继续工作，难以预料会发生什么情况
+	
+	2，可向多个应用提供服务，而只需要一个service实例
+					service
+					/  |  \
+				  A    B   C
+	
+	
+种类：
+	1，启动
+		startService来启动
+		onCreate只会调用一次
+		需要stopSelf/stopService来关闭或者让系统来杀
+		任务执行方式
+			startService来传递intent
+			onStartCommand中处理intent
+		
+	2，绑定
+		bindService来绑定，你可以决定，当service不存在的时候是否要启动它，不启动它的话，自行解决绑定失败的问题
+		onCreate只会调用一次
+		所有的客户端unbind之后自动关闭
+		任务执行方式
+			通过IBinder直接调用service的方法
+			通过messenger来互相传递message
+			通过AIDL的接口定义来调用指定的函数
+			多个客户端来bind的时候，只有第一个绑定时会调用onBind方法，其它的直接返回已经创建的binder
+			当客户端重新bind的时候，（如果在onUnbind的时候返回了true，则会调用onReBind方法，否则不会调用任何函数），直接返回已经创建的binder
+		
+	3，启动+绑定
+		startService来启动
+		bindService来绑定，如果service不存在的话，就自行使用startService来启动它，然后再绑定
+		通过unbind来解绑
+		在所有的客户端unbind以后，需要stopSelf/stopService来关闭或者让系统来杀，否则stop*无效，但会在所有的客户端unbind之后自动destroy
+		
+特性：
+	1，单进程
+		启动类的service会因为启动它的进程被杀而导致服务被杀，但如果你在onStartCommand中返回*STICKY的话，系统将会让它重新启动
+		
+	2，跨进程
+		启动类的service不会因为启动它的进程被杀而导致服务被杀，但是如果用户在任务管理器中强制关闭service所在的应用，此服务将会被杀
+		
+保持服务存活的方式：(HACK)
+	5.0以下的版本（不含），可以使用看门狗，保密，可以防止用户强制关闭
+	5.0以上的版本（含），保密，无法禁止用户强制关闭

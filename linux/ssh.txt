@@ -25,3 +25,38 @@
 3, on linux
     1, use "ssh -C -D 127.0.0.1:8086 ubuntu@open-dns -N -i vps.pem" to connect
     2, follow left steps after 3 of the section "on windows"
+	
+	
+4，ssh的常用配置
+	免密码登录：
+		生成密钥对
+			ssh-keygen -t rsa
+		将公钥复制到服务器上的你要登录的账号家目录 ~/.ssh/authorized_keys
+			scp id_rsa.pub user@server:/home/user/.ssh/authorized_keys
+		将~/.ssh/authorized_keys的读写模式设为600
+			chmod 600 ~/.ssh/authorized_keys
+		直接登录
+			ssh user@server
+			
+	多个密钥的管理：
+		私钥：serverA_rsa
+		私钥：serverB_rsa
+		在客户端上配置
+			vi ~/.ssh/config
+		按以下格式配置
+			host serverA
+				port 22
+				IdentityFile serverA_rsa
+				
+			host serverB
+				port 33
+				IdentityFile serverB_rsa
+	
+	登录过程太慢：
+		在服务器上配置
+			vi /etc/ssh/ssh_config
+		设置
+			UseDNS no
+		重启ssh服务
+			service ssh reload/restart
+		

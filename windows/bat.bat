@@ -5,7 +5,7 @@ if exist %target%\nul (
 	echo 'not a folder'
 )
 
-::获取当前脚本所有的目录
+::获取当前脚本所在的目录
 set root=%~dp0
 
 ::for获取整行，禁止被空格打断

@@ -1,5 +1,8 @@
-﻿1, 第一行要指定为#!/bin/bash，因为ubuntu之类的系统会把/bin/dash链接到/bin/sh，导致脚本失效，因为这两个环境(bash, dash)语法不同
+1, 第一行要指定为#!/bin/bash，因为ubuntu之类的系统会把/bin/dash链接到/bin/sh，导致脚本失效，因为这两个环境(bash, dash)语法不同
 可以参照 http://www.igigo.net/post/archives/169
+
+在一个字符串中使用变量的时候，需要这样：
+	i_am_well${var}_done
 
 2, heredoc
 cat > file <<doc
@@ -38,8 +41,20 @@ doc
     str=$str" ha"
     echo $str // wa ha ha
     
-7, 字符串替换
+7, 字符串替换(数据量大的时候特别慢)
     str="wa ha ha"
     ${str/ha/haha} //wa haha ha
     ${str//ha/haha} //wa haha haha
-    
+
+8, 要替换文件中的字符串，并且要原样输出的话，建议一行一行读取，因为当文件比较大的时候，一次性读取进来再进行替换操作，会很慢
+   要原样输出只需要加上“”即可
+    1, 整体读取和替换（速度慢）
+        content=$(<fileName)
+        after=${content//_REPLACE_ME_/_REPLACING_}
+        echo “$after” > newFileName
+    2, 按行读取和替换
+        while read line
+        do
+            after=$(line//_REPLACE_ME_/_REPLACING_}
+            echo “$after” >> newFileName
+        done < fileName

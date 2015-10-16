@@ -1,0 +1,22 @@
+替换文件结尾格式
+    set ff=unix/dos/linux/mac
+
+替换全文中指定的字符串
+    :%s/target/replaced/g
+
+设置tab为4个空格
+    在~/.vimrc文件中
+        set tabstop=4
+        set shiftwidth=4
+        set expandtab
+
+设置语法高亮
+    在~/.vimrc文件中或者直接输入下列命令
+        syntax on
+
+设置显示行数
+    在~/.vimrc文件中或者直接输入下列命令
+        set nu
+
+缩进多行
+    用v模式，选中多行以后，使用shift+>缩进，shift+<反缩进

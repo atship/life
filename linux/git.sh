@@ -9,6 +9,17 @@ git reflog #查看被删除的提交的hash值,从中找到自己需要的hash
 git reset --hard commit-id #这个commit-id为被删除的commit的hash值,此时被删除的文件被找回来了
 /*当使用git reset --hard commit-id/HEAD~1的时候,硬盘上相应的文件将会被删除,如果git未垃圾回收,还来得及找回,否则就找不回了*/
 
+#重整历史记录，从最新的变动开始修改
+#将在分支develop上的修改，生成patch，在master分支上重演一遍，下图中，feature分支在merge之后，不可再使用rebase，免得merge的历史丢失以致于历史混乱
+#在rebase的时候，有可能会产生冲突，因为要生成patch，此时需要手动解决，然后 git rebase --continue，如果要放弃，则使用 git rebase --abort
+git rebase master develop
+                                                                        after rebase
+master  commit - commit - commit - merge - commit - commit - commit - commit1' - commit2'
+            \                     /           \                     /
+feature    commit - commit - commit          commit - commit - commit
+                                                \                 /
+develop                                          commit1 - commit2
+
 #与原作者同步的步骤
 git checkout -b origin-author-master master
 git pull https://github.com/origin-author/origin-repos master

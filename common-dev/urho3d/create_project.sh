@@ -119,6 +119,16 @@ function filter_package_name()
     return 0
 }
 
+function parse_project_home()
+{
+	if windows; then
+		drive=${project_path:1:1}
+		project_home=${project_path/\/$drive/$drive:}
+	else
+		project_home=$project_path
+	fi
+}
+
 function filter_project_path()
 {
 	if [ "$1" == "" ]; then
@@ -128,12 +138,7 @@ function filter_project_path()
 	project_path=$1
     if [ -d $project_path ]; then
 		project_path=$(cd $1; pwd)
-        if windows; then
-            drive=${project_path:1:1}
-            project_home=${project_path/\/$drive/$drive:}
-        else
-            project_home=$project_path
-        fi
+		parse_project_home
         cfont -red " Project path $project_path exists\n Do you want to replace the project files with newer version?\n (y/n)" -n -reset
 		if [[ "$project_path" == "$sdk_root" ]]; then
 			cfont -cyan " The path is Urho3D sdk root, don't do this" -n -reset
@@ -149,6 +154,10 @@ function filter_project_path()
 			fi
 		fi
     else
+		mkdir $project_path
+		_create_dir_=1
+		project_path=$(cd $1; pwd)
+		parse_project_home
         return 0
     fi
 }
@@ -260,6 +269,7 @@ function make_project_dir()
 # whether the parameter is a symlink. With two parameters, it will create
 # a symlink to a file or directory, with syntax: link $linkname $target
 link() {
+	echo "link $1 $2"
     if [[ -z "$2" ]]; then
         # Link-checking mode.
         if windows; then
@@ -274,7 +284,7 @@ link() {
             # Also: note that we convert `/` to `\`. In this case it's necessary.
             
             if [[ -d "$2" ]]; then
-                cmd <<< "mklink /D \"${1//\//\\}\" \"${2//\//\\}\"" > /dev/null
+                cmd <<< "mklink /J \"${1//\//\\}\" \"${2//\//\\}\"" > /dev/null
             else
                 cmd <<< "mklink \"${1//\//\\}\" \"${2//\//\\}\"" > /dev/null
             fi
@@ -289,12 +299,88 @@ function copy_resources()
 {
 	cd $urho3d_build_tree
     if windows; then
-        cp cmake_generic.bat $project_path/
+        cat > $project_path/cmake_generic.bat <<generic
+::
+:: Copyright (c) 2008-2015 the Urho3D project.
+::
+:: Permission is hereby granted, free of charge, to any person obtaining a copy
+:: of this software and associated documentation files (the "Software"), to deal
+:: in the Software without restriction, including without limitation the rights
+:: to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+:: copies of the Software, and to permit persons to whom the Software is
+:: furnished to do so, subject to the following conditions:
+::
+:: The above copyright notice and this permission notice shall be included in
+:: all copies or substantial portions of the Software.
+::
+:: THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+:: IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+:: FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+:: AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+:: LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+:: OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+:: THE SOFTWARE.
+::
+
+@echo off
+setlocal ENABLEDELAYEDEXPANSION
+
+:: Determine source tree and build tree
+set "SOURCE=%~dp0"
+set "SOURCE=%SOURCE:~0,-1%"
+set "BUILD="
+if "%~1" == "" goto :continue
+set "ARG1=%~1"
+if "%ARG1:~0,1%" equ "-" goto :continue
+set "BUILD=%~1"
+shift
+:continue
+if "%BUILD%" == "" if exist "%cd%\CMakeCache.txt" (set "BUILD=%cd%") else (goto :error)
+
+:: Detect CMake toolchains directory if it is not provided explicitly
+if "%TOOLCHAINS%" == "" set "TOOLCHAINS=%SOURCE%\CMake\Toolchains"
+if not exist "%TOOLCHAINS%" if exist "%URHO3D_HOME%\share\Urho3D\CMake\Toolchains" set "TOOLCHAINS=%URHO3D_HOME%\share\Urho3D\CMake\Toolchains"
+:: BEWARE that the TOOLCHAINS variable leaks to caller's environment!
+
+:: Default to native generator and toolchain if none is specified explicitly
+set "OPTS="
+set "BUILD_OPTS="
+set "arch="
+set "cwd=%cd%"
+if exist "%BUILD%\CMakeCache.txt" cd "%BUILD%" && for /F "eol=/ delims=:= tokens=1-3" %%i in (CMakeCache.txt) do if "%%i" == "URHO3D_64BIT" if "%%k" == "1" set "arch= Win64"
+cd %cwd%
+:loop
+if not "%~1" == "" (
+    if "%~1" == "-DANDROID" if "%~2" == "1" set "OPTS=-G "Unix Makefiles" -DCMAKE_TOOLCHAIN_FILE="%TOOLCHAINS%\android.toolchain.cmake""
+    if "%~1" == "-DEMSCRIPTEN" if "%~2" == "1" set "OPTS=-G "MinGW Makefiles" -DCMAKE_TOOLCHAIN_FILE="%TOOLCHAINS%\emscripten.toolchain.cmake""
+    if "%~1" == "-DURHO3D_64BIT" if "%~2" == "1" set "arch= Win64"
+    if "%~1" == "-DURHO3D_64BIT" if "%~2" == "0" set "arch="
+    if "%~1" == "-VS" set "OPTS=-G "Visual Studio %~2%arch%""
+    if "%~1" == "-G" set "OPTS=%OPTS% %~1 %2"
+    set "ARG1=%~1"
+    set "ARG2=%~2"
+    if "!ARG1:~0,2!" == "-D" set "BUILD_OPTS=%BUILD_OPTS% !ARG1!=!ARG2!"
+    shift
+    shift
+    goto loop
+)
+
+:: Create project with the chosen CMake generator and toolchain
+cmake -E make_directory "%BUILD%" && cmake -E chdir "%BUILD%" cmake %OPTS% %BUILD_OPTS% "%SOURCE%"
+
+goto :eof
+:error
+echo Usage: %~nx0 \path\to\build-tree [build-options]
+exit /B 1
+:eof
+generic
         cat > $project_path/cmake_android.bat <<android
 echo @%~dp0\cmake_generic.bat %* -DANDROID=1 -DURHO3D_HOME=$urho3d_home/%1 > cmake_remake_android.bat
 @%~dp0\cmake_generic.bat %* -DANDROID=1 -DURHO3D_HOME=$urho3d_home/%1
 android
-        if [ -n "$VS120COMNTOOLS" ]; then
+		if [ -n "$VS140COMNTOOLS" ]; then
+			vs="-VS=14"
+        elif [ -n "$VS120COMNTOOLS" ]; then
             vs='-VS=12'
         elif [ -n "$VS110COMNTOOLS" ]; then
             vs='-VS=11'
@@ -303,8 +389,8 @@ android
         fi
         cat > $project_path/cmake_vs.bat <<vs
 mkdir "%1\bin"
-mklink /D "%1\bin\Data" "$project_home\bin\Data"
-mklink /D "%1\bin\CoreData" "$project_home\bin\CoreData"
+mklink /J "%1\bin\Data" "$project_home\bin\Data"
+mklink /J "%1\bin\CoreData" "$project_home\bin\CoreData"
 echo @%~dp0\cmake_generic.bat %* $vs -DURHO3D_HOME=$urho3d_home/%1 > cmake_remake_vs.bat
 @%~dp0\cmake_generic.bat %* $vs -DURHO3D_HOME=$urho3d_home/%1
 vs
@@ -326,14 +412,15 @@ android
     #cp *.sh *.bat $project_path/
     #rm $project_path/$this_file
 	#write_android_bat
+	touch $project_path/bin/CoreData/readme
     cp bin/CoreData/* $project_path/bin/Data/ -r
     cp bin/Data/PostProcess $project_path/bin/Data/ -r
     cp bin/Data/UI/MessageBox.xml $project_path/bin/Data/UI/
     cp bin/Data/Textures/UrhoIcon.png $project_path/bin/Data/Textures/Icon.png
-    cp bin/Data/Textures/UrhoIcon.png $project_path/Android/res/icon.png
+    cp bin/Data/Textures/UrhoIcon.png $project_path/Android/res/drawable/icon.png
     #cp Android $project_path/ -r
     cp Android/src/org $project_path/Android/src/ -r
-    link $project_home/Android/assets/ $project_home/bin/
+    link $project_home/Android/assets $project_home/bin
 	cp CMake $project_path/ -r
     rename_package_name
 }
@@ -432,7 +519,7 @@ using namespace Urho3D;
 class $project_name : public Application
 {
     // Enable type information.
-    OBJECT($project_name)
+    OBJECT($project_name, Application)
     
 public:
     /// Construct.
@@ -546,10 +633,6 @@ cpp
 }
 
 parse_paramters $*
-if [ ! -d $project_path ]; then
-    mkdir $project_path
-    _create_dir_=1
-fi
 project_path=$(cd $project_path; pwd)
 summary_and_confirm
 

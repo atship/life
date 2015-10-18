@@ -43,3 +43,33 @@ for /f "delims=" %%i in ('dir /b') do (
 	echo '第!count!个文件: %%i'
 	set /a count=!count!+1
 )
+
+::延迟绑定的原理，是因为MS读取完整的语句块并且直接将变量替换成值导致了需要延迟绑定，例如
+set count=10
+for /L %%i in (1, 1, 10) do (
+	echo %count%
+	set /a count=%count%-1
+)
+echo %count%
+::当执行到for循环的时候，将会被解释成这样：
+set count=10
+for /L %%i in (1, 1, 10) do (
+	echo 10
+	set /a count=10-1
+)
+::下一句将会打印9
+echo %count%
+::因此，除非启用延迟绑定，否则其行为就不是我们所期望的，启用之后看一下会解释成这样
+setlocal enabledelayedexpansion
+set count=10
+for /L %%i in (1, 1, 10) do (
+	echo !count!
+	set /a count=!count!-1
+}
+
+::查询变量是否已定义
+if defined count (
+	echo yes
+) else (
+	echo no
+)

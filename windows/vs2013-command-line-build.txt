@@ -1,2 +1,2 @@
 using vs2013-command-line-prompt
-msbuild myproject.sln /p:Configuration=Release/Debug/MinSizeRel/... /t:Clean;Compile /p:Platform=WIN32/WIN64/AnyCPU/...
+msbuild myproject.sln /p:Configuration=Release/Debug/MinSizeRel/... /t:Clean;Compile /p:Platform=WIN32/WIN64/AnyCPU/... /m:4

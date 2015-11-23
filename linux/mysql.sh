@@ -1,6 +1,9 @@
 #安装 (fedora 17)
 sudo yum install mysql mysql-server mysql-workbench
 
+#启动 (centos 6.5)
+/etc/init.d/mysqld restart/start/stop
+
 #配置（字符集）
 sudo vi /etc/my.cnf
 
@@ -21,7 +24,9 @@ mysqladmin -uroot password 123456
 mysqladmin -uroot -p123456 password abc
 
 #添加一个新用户test,密码为1234，该用户可操作数据库site
-#grant sudi on database to user at host identified by password
+#grant S.U.D.I on database to user at host identified by password
+# host 可以是 '%', 'xx.xx.xx.xx', 'localhost'
+# database 格式是 'db.table', 可以是 *.* db.* db.mytable
 grant select,update,delete,insert on site.* to test@localhost identified by "1234";
 
 #删除用户test@localhost，这个不会删除用户test@otherhost

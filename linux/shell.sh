@@ -58,3 +58,9 @@ doc
             after=$(line//_REPLACE_ME_/_REPLACING_}
             echo “$after” >> newFileName
         done < fileName
+
+9, bc 显示其它进制
+    obase=2
+    obase=8
+    obase=10
+    obase=16

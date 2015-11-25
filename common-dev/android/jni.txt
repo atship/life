@@ -1,5 +1,5 @@
 1, 动态注册函数
-#define NELEM(x) ((int) (sizeof(x) / sizeof((x)[0]))) 
+#define NELEM(x) ((int) (sizeof(x) / sizeof((x)[0])))
 
 static void jni_func1(JNIENV* env, jclass clazz){}
 static void jni_func2(JNIENV* env, jclass clazz, jobject context){}
@@ -14,13 +14,13 @@ extern "C"{
 	{
 		JNIEnv* env = NULL;
 		jint result = -1;
-		
+
 		if (vm->GetEnv((void**) &env, JNI_VERSION_1_4) != JNI_OK) {
 			return result;
 		}
 
 		env->RegisterNatives(env->FindClass("com/mypackage/MyClass"), methods_table, NELEM(methods_table));
-		
+
 		return JNI_VERSION_1_4;
 	}
 }
@@ -39,8 +39,9 @@ extern "C"{
     貌似也可以直接使用ndk-build NDK_DEBUG=1来开启DEBUG
 
 5, 如果使用了第三方库，则需要在Android.mk文件中指定，但STL除外，它应该在Application.mk文件中指定
-    LOCAL_LDLIBS    := -llog
-    
+    LOCAL_LDLIBS := -llog
+    LOCAL_CFLAGS := DEBUG
+
 6, 最好将java的类指定到一个数组里面去，好检查是否写错，比如签名，类类型都是"Lpackage/Class;"这样的格式，而env->FindClass的时候需要的是"package/Class"的格式
 
 7, 如果在JNI_OnLoad函数中添加ptrace(PTRACE_TRACEME, 0, 0, 0)的话，第一次安装运行应用的时候，会导致无法动态替换DexClassLoader，因为它会卡在Dexopt的过程中
@@ -48,10 +49,10 @@ extern "C"{
 8, 静态注册
     1, 静态函数
     JNIEXPORT void JNICALL Java_com_cpp_1empty_1test_AppActivity_setPackageAndClassName(JNIEnv *env, jclass clazz, jstring param){}
-    
+
     2, 普通函数
     JNIEXPORT void JNICALL Java_com_cpp_1empty_1test_AppActivity_setPackageAndClassName(JNIEnv *env, jobject thiz, jstring param){}
-    
+
     上述方法定义了com.cpp_empty_test.AppActivity这个类中的setPackageAndClassName方法，静态与普通各一个
 
 9, jni潜在的问题检测方法

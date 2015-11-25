@@ -4,10 +4,13 @@ git reset --hard HEAD~1
 #想要删除某个版本的提交
 git reset --hard commit-id
 
+#不再跟踪指定的文件/目录
+git rm --cached file [folder -r]
+
 #删除了某一个提交导致相应的文件从硬盘被删除,但未被git垃圾回收
 git reflog #查看被删除的提交的hash值,从中找到自己需要的hash
 git reset --hard commit-id #这个commit-id为被删除的commit的hash值,此时被删除的文件被找回来了
-/*当使用git reset --hard commit-id/HEAD~1的时候,硬盘上相应的文件将会被删除,如果git未垃圾回收,还来得及找回,否则就找不回了*/
+/*当使用git reset --hard commit-id/HEAD~1的时候,工作区中相应的文件将会被删除,如果git未垃圾回收,还来得及找回,否则就找不回了*/
 
 #重整历史记录，从最新的变动开始修改
 #将在分支develop上的修改，生成patch，在master分支上重演一遍，下图中，feature分支在merge之后，不可再使用rebase，免得merge的历史丢失以致于历史混乱

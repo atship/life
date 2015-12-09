@@ -64,3 +64,6 @@ doc
     obase=8
     obase=10
     obase=16
+
+    保留2位小数点
+    scale=2

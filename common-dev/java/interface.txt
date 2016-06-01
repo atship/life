@@ -1,0 +1,7 @@
+关于接口的问题
+    由于接口是公开给外部的方法，所以在proguard中必须要保留下来
+    如果没有保留正确的话，将会导致方法找不到之类的错误
+        要保存的话，需要这样
+            -keep class * implements your.inter.face {
+                public <methods>;
+            }

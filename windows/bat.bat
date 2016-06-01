@@ -73,3 +73,10 @@ if defined count (
 ) else (
 	echo no
 )
+
+::复制目录及文件，如果目录不存在，则自动创建
+xcopy A B\
+::如果要防止它询问是文件还是目录，则可以这样：
+echo f | xcopy A B
+::或者
+echo d | xcopy A B

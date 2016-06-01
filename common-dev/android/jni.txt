@@ -64,6 +64,6 @@ extern "C"{
     start
     运行应用，如果出现问题，一般可在logcat中看到jni的警告
 
-    2, ndk-trace
+    2, ndk-stack
     发生崩溃的时候，将日志信息复制到文本文件中
-    ndk-trace -sym objs/ -dump log.txt
+    ndk-stack -sym objs/local/x86 -dump log.txt

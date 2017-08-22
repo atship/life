@@ -54,9 +54,8 @@
 	
 	登录过程太慢：
 		在服务器上配置
-			vi /etc/ssh/ssh_config
+			vi /etc/ssh/sshd_config
 		设置
 			UseDNS no
 		重启ssh服务
-			service ssh reload/restart
-		
+			service sshd reload/restart	

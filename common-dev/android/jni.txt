@@ -1,8 +1,8 @@
 1, 动态注册函数
 #define NELEM(x) ((int) (sizeof(x) / sizeof((x)[0])))
 
-static void jni_func1(JNIENV* env, jclass clazz){}
-static void jni_func2(JNIENV* env, jclass clazz, jobject context){}
+static void jni_func1(JNIEnv* env, jclass clazz){}
+static void jni_func2(JNIEnv* env, jclass clazz, jobject context){}
 
 static const JNINativeMethod methods_table[] = {
     "myclass_func1", "()V", (void*)jni_func1,
@@ -28,14 +28,19 @@ extern "C"{
 2, 一定要注意jclass, jobject, jstring需要delete，尤其是在一个循环之内的时候
     env->DeleteLocalRef(jclass)
     env->DeleteLocalRef(jobject)
-    evn->ReleaseStringUTFChars(jstring)
+
+    env->NewStringUTF()
+    env->DeleteLocalRef()
+
+    env->GetStringUTFChars()
+    env->ReleaseStringUTFChars(jstring)
 
 3, android的__android_log_print，如果定义了一个宏，比如LOGI(...)　((void)__android_log_print(ANDROID_LOG_INFO, "TAG", __VA_ARGS__)),这时如果要输出一个变量的值，则需要使用format, 例如LOGI("%s", c_str)
 
 4, 打包的时候，可以设置debug或者release，ndk-build默认为release，设置的时候需要在Application.mk文件中指定
     APP_PLATFORM := android-3
     APP_STL := stlport_static
-    APP_OPTIM := DEBUG
+    APP_OPTIM := debug
     貌似也可以直接使用ndk-build NDK_DEBUG=1来开启DEBUG
 
 5, 如果使用了第三方库，则需要在Android.mk文件中指定，但STL除外，它应该在Application.mk文件中指定

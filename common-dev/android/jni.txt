@@ -35,7 +35,7 @@ extern "C"{
     env->GetStringUTFChars()
     env->ReleaseStringUTFChars(jstring)
 
-3, android的__android_log_print，如果定义了一个宏，比如LOGI(...)　((void)__android_log_print(ANDROID_LOG_INFO, "TAG", __VA_ARGS__)),这时如果要输出一个变量的值，则需要使用format, 例如LOGI("%s", c_str)
+3, android的__android_log_print，如果定义了一个宏，比如LOGI(...)　((void)__android_log_print(ANDROID_LOG_INFO, "TAG", __VA_ARGS__)),这时如果要输出一个变量的值，则需要使用format, 例如LOGI("%s", c_str), 需要 #include <android/log.h>, 并且需要 LOCAL_CFLAGS := -llog
 
 4, 打包的时候，可以设置debug或者release，ndk-build默认为release，设置的时候需要在Application.mk文件中指定
     APP_PLATFORM := android-3
